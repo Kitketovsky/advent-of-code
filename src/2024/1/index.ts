@@ -5,7 +5,13 @@ import readline from 'node:readline/promises'
 type LocationIdList = number[]
 
 async function main() {
-	const inputFilePath = path.join(process.cwd(), 'src', '2024', 'input.txt')
+	const inputFilePath = path.join(
+		process.cwd(),
+		'src',
+		'2024',
+		'1',
+		'input.txt',
+	)
 
 	accessSync(inputFilePath, constants.R_OK)
 
@@ -77,10 +83,6 @@ function calculateTotalListsDistance(
 	for (let i = 0; i < sortedLeftList.length; i++) {
 		const leftId = sortedLeftList[i]
 		const rightId = sortedRightList[i]
-
-		if (leftId === undefined || rightId === undefined) {
-			throw new Error('One of the location IDs is missing')
-		}
 
 		totalDistance += Math.abs(leftId - rightId)
 	}
