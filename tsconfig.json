@@ -1,10 +1,6 @@
 {
 	"include": ["src/**/*.ts"],
 	"compilerOptions": {
-		"module": "nodenext",
-		"target": "esnext",
-		"lib": ["esnext"],
-		"types": ["node"],
 		"baseUrl": "./",
 		"paths": {
 			"*": ["src/*"]
@@ -14,12 +10,26 @@
 		"declarationMap": true,
 		"noUncheckedIndexedAccess": true,
 		"exactOptionalPropertyTypes": true,
-		"noEmit": true,
-		"strict": true,
-		"verbatimModuleSyntax": true,
 		"isolatedModules": true,
-		"noUncheckedSideEffectImports": true,
+
+		"target": "ES2022",
+		"useDefineForClassFields": true,
+		"module": "ESNext",
+		"lib": ["ES2023"],
+		"types": ["vite/client", "node"],
+		"skipLibCheck": true,
+
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
 		"moduleDetection": "force",
-		"skipLibCheck": true
+		"noEmit": true,
+
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"erasableSyntaxOnly": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true
 	}
 }
