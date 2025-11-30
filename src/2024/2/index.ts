@@ -13,9 +13,16 @@ async function main() {
 
 	accessSync(inputFilePath, constants.R_OK)
 
-	const safeReportsAmount = await getSafeReportsAmount(inputFilePath)
+	const safeReportsAmount = await getSafeReportsAmount(inputFilePath, {
+		dampening: false,
+	})
 
-	return { safeReportsAmount }
+	const safeReportsAmountWithDampening = await getSafeReportsAmount(
+		inputFilePath,
+		{ dampening: true },
+	)
+
+	return { safeReportsAmount, safeReportsAmountWithDampening }
 }
 
 main().then(console.log)
@@ -23,7 +30,10 @@ main().then(console.log)
 type Level = number
 type Report = Level[]
 
-async function getSafeReportsAmount(filepath: string) {
+async function getSafeReportsAmount(
+	filepath: string,
+	{ dampening }: { dampening: boolean },
+) {
 	const rl = readline.createInterface({
 		input: createReadStream(filepath, { encoding: 'utf-8' }),
 		crlfDelay: Infinity,
@@ -32,8 +42,10 @@ async function getSafeReportsAmount(filepath: string) {
 	let safeReportsAmount = 0
 
 	for await (const line of rl) {
+		if (!line.trim()) continue
+
 		const report: Report = parseReportFromInputLine(line)
-		const isReportSafe = checkReportSafety(report)
+		const isReportSafe = checkReportSafety(report, { dampening })
 
 		if (isReportSafe) {
 			safeReportsAmount++
@@ -47,12 +59,40 @@ function parseReportFromInputLine(line: string) {
 	return line.split(' ').map(Number)
 }
 
-function checkReportSafety(report: Report) {
-	let hasIncreased = false
-	let hasDecreased = false
+function checkReportSafety(
+	report: Report,
+	{ dampening }: { dampening: boolean },
+) {
+	if (isReportSafeWithoutDampening(report)) {
+		return true
+	}
+
+	if (dampening) {
+		for (let i = 0; i < report.length; i++) {
+			const modifiedReport = report.filter((_, index) => index !== i)
+
+			if (isReportSafeWithoutDampening(modifiedReport)) {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+function isReportSafeWithoutDampening(report: Report): boolean {
+	const COMPARABLE_REPORT_LENGTH = 2
+
+	if (report.length < COMPARABLE_REPORT_LENGTH) return true
 
 	const MAX_LEVEL_DIFF = 3
 	const MIN_LEVEL_DIFF = 1
+
+	const firstDiff = report[1] - report[0]
+
+	if (firstDiff < MIN_LEVEL_DIFF) return false
+
+	const isIncreasing = firstDiff > MIN_LEVEL_DIFF - 1
 
 	for (let i = 1; i < report.length; i++) {
 		const levelDiff = report[i] - report[i - 1]
@@ -62,17 +102,9 @@ function checkReportSafety(report: Report) {
 			return false
 		}
 
-		if (!hasIncreased && levelDiff > 0) {
-			hasIncreased = true
-		}
+		const currentIsIncreasing = levelDiff > MIN_LEVEL_DIFF - 1
 
-		if (!hasDecreased && levelDiff < 0) {
-			hasDecreased = true
-		}
-
-		const isReportInconsistent = hasIncreased && hasDecreased
-
-		if (isReportInconsistent) {
+		if (currentIsIncreasing !== isIncreasing) {
 			return false
 		}
 	}
