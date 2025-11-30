@@ -5,34 +5,24 @@ import readline from 'node:readline/promises'
 type LocationIdList = number[]
 
 async function main() {
-	try {
-		const inputFilePath = path.join(process.cwd(), 'src', '2024', 'input.txt')
+	const inputFilePath = path.join(process.cwd(), 'src', '2024', 'input.txt')
 
-		accessSync(inputFilePath, constants.R_OK)
+	accessSync(inputFilePath, constants.R_OK)
 
-		const { leftLocationList, rightLocationList } =
-			await formatRawLocationInput(inputFilePath)
+	const { leftLocationList, rightLocationList } =
+		await formatRawLocationInput(inputFilePath)
 
-		const totalDistance = calculateTotalListsDistance(
-			leftLocationList,
-			rightLocationList,
-		)
+	const totalDistance = calculateTotalListsDistance(
+		leftLocationList,
+		rightLocationList,
+	)
 
-		console.log(`Total distance: ${totalDistance}`)
+	const totalSimilarityScore = calculateSimilarityScore(
+		leftLocationList,
+		rightLocationList,
+	)
 
-		const totalSimilarityScore = calculateSimilarityScore(
-			leftLocationList,
-			rightLocationList,
-		)
-
-		console.log(`Total similarity score: ${totalSimilarityScore}`)
-	} catch (error) {
-		if (error instanceof Error) {
-			console.error(error.message)
-		} else {
-			console.error('An unknown error occurred')
-		}
-	}
+	return { totalDistance, totalSimilarityScore }
 }
 
 main()
