@@ -7,7 +7,7 @@ async function main() {
 		process.cwd(),
 		'src',
 		'2024',
-		'2',
+		'day-2',
 		'input.txt',
 	)
 

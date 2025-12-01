@@ -29,3 +29,6 @@ coverage
 
 # Vitest
 __screenshots__/
+
+# Advent of Code inputs
+.txt
