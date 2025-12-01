@@ -31,4 +31,4 @@ coverage
 __screenshots__/
 
 # Advent of Code inputs
-.txt
+src/**/*.txt

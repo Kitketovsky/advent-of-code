@@ -4,6 +4,10 @@ My solutions to [Advent of Code](https://adventofcode.com/) challenges.
 
 ## Solutions
 
+### 2025 (Typescript)
+
+- [Day 1: Secret Entrance](src/2025/day-1/index.ts)
+
 ### 2024 (Typescript)
 
 - [Day 1: Historian Hysteria](src/2024/day-1/index.ts)
