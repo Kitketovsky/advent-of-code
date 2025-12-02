@@ -1,34 +1,13 @@
-import { accessSync, constants, createReadStream } from 'node:fs'
 import path from 'node:path'
-import readline from 'node:readline/promises'
+
+import { createLineListFromInput } from 'utils/createLineListFromInput'
 
 const inputFilePath = path.resolve('src', '2025', 'day-2', 'input.txt')
 
-accessSync(inputFilePath, constants.R_OK)
-
 createLineListFromInput(inputFilePath)
 	.then(([rawRanges]) => parseRawRangesString(rawRanges))
-	.then((ranges) =>
-		ranges.reduce((acc, range) => acc + getInvalidRangeSum(range), 0),
-	)
+	.then(calculateTotalInvalidRangeSum)
 	.then(console.log)
-
-async function createLineListFromInput(path: string) {
-	const result: string[] = []
-
-	const rl = readline.createInterface({
-		input: createReadStream(path, {
-			encoding: 'utf8',
-		}),
-		crlfDelay: Infinity,
-	})
-
-	for await (const line of rl) {
-		result.push(line)
-	}
-
-	return result
-}
 
 type Range = [number, number]
 
@@ -64,4 +43,8 @@ function getInvalidRangeSum(range: Range, numOfPatterns: number = Infinity) {
 	}
 
 	return invalidRangeSum
+}
+
+function calculateTotalInvalidRangeSum(ranges: Range[]) {
+	return ranges.reduce((acc, range) => acc + getInvalidRangeSum(range), 0)
 }

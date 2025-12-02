@@ -1,33 +1,14 @@
-import { accessSync, constants, createReadStream } from 'node:fs'
 import path from 'node:path'
-import readline from 'node:readline/promises'
+
+import { createLineListFromInput } from 'utils/createLineListFromInput'
 
 const inputFilePath = path.resolve('src', '2025', 'day-1', 'input.txt')
-
-accessSync(inputFilePath, constants.R_OK)
 
 createLineListFromInput(inputFilePath).then((lines) => {
 	const rotations = lines.map(parseInputLine)
 	const password = calculatePassword(rotations)
 	console.log(password)
 })
-
-async function createLineListFromInput(path: string) {
-	const result: string[] = []
-
-	const rl = readline.createInterface({
-		input: createReadStream(path, {
-			encoding: 'utf8',
-		}),
-		crlfDelay: Infinity,
-	})
-
-	for await (const line of rl) {
-		result.push(line)
-	}
-
-	return result
-}
 
 type Direction = 'L' | 'R'
 type Ticks = number
