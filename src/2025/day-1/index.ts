@@ -1,4 +1,4 @@
-import { accessSync,constants, createReadStream } from 'node:fs'
+import { accessSync, constants, createReadStream } from 'node:fs'
 import path from 'node:path'
 import readline from 'node:readline/promises'
 
