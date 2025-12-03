@@ -1,37 +1,42 @@
 import path from 'node:path'
 
-import { createLineListFromInput } from 'utils/createLineListFromInput'
+import { createLineListFromInput } from './../../utils/createLineListFromInput'
 
 const inputFilePath = path.resolve('src', '2025', 'day-1', 'input.txt')
 
-createLineListFromInput(inputFilePath).then((lines) => {
-	const rotations = lines.map(parseInputLine)
-	const password = calculatePassword(rotations)
-	console.log(password)
-})
+createLineListFromInput(inputFilePath)
+	.then(getRotationsFromRawInput)
+	.then((rotations) => {
+		console.log('Part 1:', calculatePassword(rotations).zeroPositionCount)
+		console.log('Part 2:', calculatePassword(rotations).zeroPassThroughCount)
+	})
 
 type Direction = 'L' | 'R'
 type Ticks = number
 
 type Rotation = { direction: Direction; ticks: Ticks }
-type Rotations = Rotation[]
+export type Rotations = Rotation[]
 
-function parseInputLine(line: string): { direction: Direction; ticks: Ticks } {
+function getRotationsFromRawInput(
+	lines: string[],
+): { direction: Direction; ticks: Ticks }[] {
 	const regexp = /([LR])(\d+)/
 
-	const match = line.match(regexp)
+	return lines.map((line) => {
+		const match = line.match(regexp)
 
-	if (!match) {
-		throw new Error(`Invalid instruction: ${line}`)
-	}
+		if (!match) {
+			throw new Error(`Invalid instruction: ${line}`)
+		}
 
-	const direction = match[1] as Direction
-	const ticks = parseInt(match[2])
+		const direction = match[1] as Direction
+		const ticks = parseInt(match[2])
 
-	return { direction, ticks }
+		return { direction, ticks }
+	})
 }
 
-function calculatePassword(rotations: Rotations) {
+export function calculatePassword(rotations: Rotations) {
 	const MAX_TICKS = 100
 	const INITIAL_DIAL_POSITION = 50
 
