@@ -2,7 +2,11 @@ import { accessSync, constants, createReadStream } from 'node:fs'
 import { createInterface } from 'node:readline/promises'
 
 export async function createLineListFromInput(path: string) {
-	accessSync(path, constants.R_OK)
+	try {
+		accessSync(path, constants.R_OK)
+	} catch {
+		throw new Error(`File '${path}' is not readable`)
+	}
 
 	const result: string[] = []
 
