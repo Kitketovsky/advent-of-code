@@ -1,77 +1,61 @@
-import { accessSync, constants, createReadStream } from 'node:fs'
 import path from 'node:path'
-import readline from 'node:readline/promises'
+
+import { createLineListFromInput } from './../../utils/createLineListFromInput'
+
+const inputFilePath = path.join(
+	process.cwd(),
+	'src',
+	'2024',
+	'day-1',
+	'input.txt',
+)
+
+createLineListFromInput(inputFilePath)
+	.then(getListsRawLocationInput)
+	.then(({ leftList, rightList }) => {
+		console.log('Part 1:', calculateTotalListsDistance(leftList, rightList))
+		console.log('Part 2:', calculateSimilarityScore(leftList, rightList))
+	})
 
 type LocationIdList = number[]
 
-async function main() {
-	const inputFilePath = path.join(
-		process.cwd(),
-		'src',
-		'2024',
-		'day-1',
-		'input.txt',
+export function getListsRawLocationInput(lines: string[]) {
+	const listRegExp = /^(\d+)\s+(\d+)$/
+
+	const lists = lines.reduce(
+		({ leftList, rightList }, line) => {
+			const match = line.trim().match(listRegExp)
+
+			if (!match) {
+				throw new Error('No location pair match has been found')
+			}
+
+			const leftLocation = match[1]
+			const rightLocation = match[2]
+
+			if (!leftLocation || !rightLocation) {
+				throw new Error('One of the location IDs is missing')
+			}
+
+			leftList.push(parseInt(leftLocation))
+			rightList.push(parseInt(rightLocation))
+
+			return { leftList, rightList }
+		},
+		{
+			leftList: [] as LocationIdList,
+			rightList: [] as LocationIdList,
+		},
 	)
 
-	accessSync(inputFilePath, constants.R_OK)
-
-	const { leftLocationList, rightLocationList } =
-		await formatRawLocationInput(inputFilePath)
-
-	const totalDistance = calculateTotalListsDistance(
-		leftLocationList,
-		rightLocationList,
-	)
-
-	const totalSimilarityScore = calculateSimilarityScore(
-		leftLocationList,
-		rightLocationList,
-	)
-
-	return { totalDistance, totalSimilarityScore }
-}
-
-main()
-
-async function formatRawLocationInput(filepath: string) {
-	const listRegExp = /(\d+)\w+(\d+)/g
-
-	const leftLocationList: LocationIdList = []
-	const rightLocationList: LocationIdList = []
-
-	const rl = readline.createInterface({
-		input: createReadStream(filepath, { encoding: 'utf-8' }),
-		crlfDelay: Infinity,
-	})
-
-	for await (const line of rl) {
-		const match = line.trim().match(listRegExp)
-
-		if (!match) {
-			throw new Error('No location pair match has been found')
-		}
-
-		const [leftLocation, rightLocation] = match
-
-		if (!leftLocation || !rightLocation) {
-			throw new Error('One of the location IDs is missing')
-		}
-
-		leftLocationList.push(parseInt(leftLocation))
-		rightLocationList.push(parseInt(rightLocation))
-	}
-
-	if (leftLocationList.length !== rightLocationList.length) {
+	if (lists.leftList.length !== lists.rightList.length) {
 		throw new Error('Lists are not of the same length')
 	}
 
-	return {
-		leftLocationList,
-		rightLocationList,
-	}
+	return lists
 }
 
-function calculateTotalListsDistance(
+export function calculateTotalListsDistance(
 	leftList: LocationIdList,
 	rightList: LocationIdList,
 ) {
@@ -90,7 +74,7 @@ function calculateTotalListsDistance(
 	return totalDistance
 }
 
-function calculateSimilarityScore(
+export function calculateSimilarityScore(
 	leftList: LocationIdList,
 	rightList: LocationIdList,
 ) {
