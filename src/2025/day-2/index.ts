@@ -1,15 +1,17 @@
 import path from 'node:path'
 
-import { createLineListFromInput } from 'utils/createLineListFromInput'
+import { createLineListFromInput } from './../../utils/createLineListFromInput'
 
 const inputFilePath = path.resolve('src', '2025', 'day-2', 'input.txt')
 
 createLineListFromInput(inputFilePath)
 	.then(([rawRanges]) => parseRawRangesString(rawRanges))
-	.then(calculateTotalInvalidRangeSum)
-	.then(console.log)
+	.then((ranges) => {
+		console.log('Part 1:', calculateTotalInvalidRangeSum(ranges, 2))
+		console.log('Part 1:', calculateTotalInvalidRangeSum(ranges, Infinity))
+	})
 
-type Range = [number, number]
+export type Range = [number, number]
 
 function parseRawRangesString(rawRanges: string) {
 	return rawRanges.split(',').map((range) => {
@@ -45,6 +47,12 @@ function getInvalidRangeSum(range: Range, numOfPatterns: number = Infinity) {
 	return invalidRangeSum
 }
 
-function calculateTotalInvalidRangeSum(ranges: Range[]) {
-	return ranges.reduce((acc, range) => acc + getInvalidRangeSum(range), 0)
+export function calculateTotalInvalidRangeSum(
+	ranges: Range[],
+	numOfPatterns: number,
+) {
+	return ranges.reduce(
+		(acc, range) => acc + getInvalidRangeSum(range, numOfPatterns),
+		0,
+	)
 }
