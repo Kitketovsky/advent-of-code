@@ -2,6 +2,18 @@ import path from 'node:path'
 
 import { createLineListFromInput } from './../../utils/createLineListFromInput'
 
+const inputFilePath = path.resolve('src', '2025', 'day-4', 'input.txt')
+
+createLineListFromInput(inputFilePath)
+	.then(parseLinesIntoGrid)
+	.then((grid) => {
+		console.log(
+			'Part 1:',
+			analyzeGrid(grid, { recursive: false }).itemsAccessed,
+		)
+		console.log('Part 2:', analyzeGrid(grid, { recursive: true }).itemsAccessed)
+	})
+
 const CELL_ITEMS = {
 	EMPTY_PLACE: '.',
 	ROLL_OF_PAPER: '@',
@@ -11,22 +23,13 @@ type GridCellItem = (typeof CELL_ITEMS)[keyof typeof CELL_ITEMS]
 
 type Grid = GridCellItem[][]
 
-const inputFilePath = path.resolve('src', '2025', 'day-4', 'input.txt')
-
-createLineListFromInput(inputFilePath)
-	.then(parseLinesIntoGrid)
-	.then((grid) => {
-		console.log('Part 1:', calculateAccessableRollsOfPaper(grid))
-		console.log(
-			'Part 2:',
-			calculateRollsOfPaperForRemoval(grid).rollsOfPaperRemoved,
-		)
-	})
-
 export function parseLinesIntoGrid(lines: string[]): Grid {
 	return lines.map((line) =>
 		line.split('').map((char) => {
-			if (char !== '.' && char !== '@') {
+			if (
+				char !== CELL_ITEMS.EMPTY_PLACE &&
+				char !== CELL_ITEMS.ROLL_OF_PAPER
+			) {
 				throw new Error('Invalid grid character')
 			}
 
@@ -35,46 +38,32 @@ export function parseLinesIntoGrid(lines: string[]): Grid {
 	)
 }
 
-export function calculateAccessableRollsOfPaper(grid: Grid): number {
-	let canBeAccessed = 0
+export function analyzeGrid(grid: Grid, options: { recursive: boolean }) {
+	const deepCopyGrid = structuredClone(grid)
 
-	for (let row = 0; row < grid.length; row++) {
-		for (let col = 0; col < grid[row].length; col++) {
-			const { isAccessible } = getGridCellInfo(grid, row, col)
-
-			if (isAccessible) {
-				canBeAccessed++
-			}
-		}
-	}
-
-	return canBeAccessed
-}
-
-export function calculateRollsOfPaperForRemoval(grid: Grid) {
-	const deepCopyGrid = JSON.parse(JSON.stringify(grid))
-
-	let rollsOfPaperRemoved = 0
+	let itemsAccessed = 0
 
 	for (let row = 0; row < deepCopyGrid.length; row++) {
 		for (let col = 0; col < deepCopyGrid[row].length; col++) {
 			const { isAccessible } = getGridCellInfo(deepCopyGrid, row, col)
 
 			if (isAccessible) {
-				deepCopyGrid[row][col] = CELL_ITEMS.EMPTY_PLACE
-				rollsOfPaperRemoved++
+				itemsAccessed++
+
+				if (options.recursive) {
+					deepCopyGrid[row][col] = CELL_ITEMS.EMPTY_PLACE
+				}
 			}
 		}
 	}
 
-	if (rollsOfPaperRemoved > 0) {
-		const { rollsOfPaperRemoved: removedAmount } =
-			calculateRollsOfPaperForRemoval(deepCopyGrid)
-
-		rollsOfPaperRemoved += removedAmount
+	if (options.recursive && itemsAccessed > 0) {
+		itemsAccessed += analyzeGrid(deepCopyGrid, {
+			recursive: options.recursive,
+		}).itemsAccessed
 	}
 
-	return { grid: deepCopyGrid, rollsOfPaperRemoved }
+	return { grid: deepCopyGrid, itemsAccessed }
 }
 
 function getGridCellInfo(
