@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest'
 
 import {
-	calculateAmountOfPossibleFreshIngredients,
-	calculateFreshProducts,
+	calculateAmountOfPossibleFreshIngredientIds,
+	calculateFreshIngredients,
 	mergeAllIntersectingRanges,
 } from '.'
 
@@ -18,7 +18,7 @@ describe('--- Day 5: Cafeteria ---', () => {
 
 			const allProductsIds = [1, 5, 8, 11, 17, 32]
 
-			expect(calculateFreshProducts(ranges, allProductsIds)).toBe(3)
+			expect(calculateFreshIngredients(ranges, allProductsIds)).toBe(3)
 		})
 	})
 
@@ -140,7 +140,7 @@ describe('--- Day 5: Cafeteria ---', () => {
 				expected: 39,
 			},
 		])('input $input matches $expected', ({ input, expected }) => {
-			expect(calculateAmountOfPossibleFreshIngredients(input)).toBe(expected)
+			expect(calculateAmountOfPossibleFreshIngredientIds(input)).toBe(expected)
 		})
 	})
 })
