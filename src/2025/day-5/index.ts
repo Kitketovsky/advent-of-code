@@ -13,6 +13,13 @@ const allProductsIds = createSyncLineListFromInput(allProductsIdsFilePath).map(
 	(id) => Number(id),
 )
 
+function main() {
+	console.log('Part 1:', calculateFreshProducts(ranges, allProductsIds))
+	console.log('Part 2:', calculateAmountOfPossibleFreshIngredients(ranges))
+}
+
+main()
+
 export function calculateFreshProducts(
 	ranges: number[][],
 	allProductsIds: number[],
@@ -29,6 +36,13 @@ export function calculateFreshProducts(
 	}
 
 	return freshProductsCount
+}
+
+export function calculateAmountOfPossibleFreshIngredients(ranges: number[][]) {
+	const formattedRanges = mergeAllIntersectingRanges(ranges)
+	const freshProductIdsCount = countFreshIngredientsIds(formattedRanges)
+
+	return freshProductIdsCount
 }
 
 export function mergeAllIntersectingRanges(ranges: number[][]) {
@@ -55,7 +69,7 @@ export function mergeAllIntersectingRanges(ranges: number[][]) {
 	return deepCopy
 }
 
-function countAllFreshIngredientsIds(ranges: number[][]) {
+function countFreshIngredientsIds(ranges: number[][]) {
 	let totalUniqueIds = 0
 
 	for (const [start, end] of ranges) {
@@ -64,17 +78,3 @@ function countAllFreshIngredientsIds(ranges: number[][]) {
 
 	return totalUniqueIds
 }
-
-export function calculateAmountOfPossibleFreshIngredients(ranges: number[][]) {
-	const formattedRanges = mergeAllIntersectingRanges(ranges)
-	const freshProductIdsCount = countAllFreshIngredientsIds(formattedRanges)
-
-	return freshProductIdsCount
-}
-
-function main() {
-	console.log('Part 1:', calculateFreshProducts(ranges, allProductsIds))
-	console.log('Part 2:', calculateAmountOfPossibleFreshIngredients(ranges))
-}
-
-main()
