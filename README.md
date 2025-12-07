@@ -11,6 +11,7 @@ My solutions to [Advent of Code](https://adventofcode.com/) challenges.
 - [Day 3: Lobby](src/2025/day-3/index.ts)
 - [Day 4: Printing Department](src/2025/day-4/index.ts)
 - [Day 5: Cafeteria](src/2025/day-5/index.ts)
+- [Day 5: Day 6: Trash Compactor](src/2025/day-6/index.ts)
 
 ### 2024 (Typescript)
 
